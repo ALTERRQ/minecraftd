@@ -43,13 +43,12 @@ CONFIGURATION
 HELPDOC
 }
 
-# TODO: look into putting fifo in /var/run/... with group writable permissions
 # TODO: maybe make a pretty printer for the server log?
 
 ## internal control ::
 cfgs=(/etc/minecraftd.conf /etc/minecraftd.d/* ~/.config/minecraftd.conf minecraftd.conf)
 cmd=
-fifo='/tmp/minecraftd.fifo'
+fifo='/run/minecraftd/minecraftd.fifo'
 flg_cmd=false
 flg_con=false
 flg_srt=false
@@ -77,8 +76,7 @@ fi
 server() {
     trap '{ kill "$pid_fifo" &>/dev/null; rm -f "$fifo" ;}' EXIT
     rm -f "$fifo"
-    mkfifo "$fifo"
-    chmod +t "$fifo"
+    mkfifo -m 660 "$fifo"
     sleep infinity >"$fifo" &
     local pid_fifo=$!
     cd "$srv"
